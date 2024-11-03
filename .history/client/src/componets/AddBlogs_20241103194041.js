@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { useStyles } from "./utils";
 
 const labelStyles = { mb: 1, mt: 2, fontSize: "24px", fontWeight: "bold" };
+
 const AddBlogs = () => {
   const classes = useStyles();
   const navigate = useNavigate();
@@ -15,34 +16,60 @@ const AddBlogs = () => {
     description: "",
     imageURL: "",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Handle input change
   const handleChange = (e) => {
     setInputs((prevState) => ({
       ...prevState,
       [e.target.name]: e.target.value,
     }));
   };
+
+  // Send POST request to add a new blog
   const sendRequest = async () => {
-    const res = await axios
-      .post(`${config.BASE_URL}/api/blogs/add`, {
+    try {
+      const currentUser = JSON.parse(sessionStorage.getItem("currentUser"));
+      const id = currentUser.user._id;
+      const res = await axios.post(`${config.BASE_URL}/api/blogs/add`, {
         title: inputs.title,
         desc: inputs.description,
         img: inputs.imageURL,
-        user: localStorage.getItem("userId"),
-      })
-      .catch((err) => console.log(err));
-    const data = await res.data;
-    return data;
+        user: id,
+      });
+      return res.data;
+    } catch (err) {
+      console.error(err);
+    }
   };
-  const handleSubmit = (e) => {
+
+  // Handle form submission
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(inputs);
-    sendRequest()
-      .then((data) => console.log(data))
-      .then(() => navigate("/blogs"));
+
+    // Basic validation: Check if inputs are not empty
+    if (!inputs.title || !inputs.description || !inputs.imageURL) {
+      alert("Please fill all the fields before submitting.");
+      return;
+    }
+
+    setIsSubmitting(true); // Disable the button while submitting
+
+    // Send request and handle response
+    await sendRequest()
+      .then((data) => {
+        console.log(data);
+        navigate("/blogs");
+      })
+      .finally(() => setIsSubmitting(false)); // Re-enable the button after request completes
   };
+
   return (
     <div>
-      <form onSubmit={handleSubmit} style={{maxWidth:"60vw", marginTop:"15px"}}>
+      <form
+        onSubmit={handleSubmit}
+        style={{ maxWidth: "60vw", marginTop: "15px" }}
+      >
         <Box
           borderRadius={10}
           padding={3}
@@ -59,6 +86,8 @@ const AddBlogs = () => {
           >
             Post Your Blog
           </Typography>
+
+          {/* Blog Title */}
           <InputLabel className={classes.font} sx={labelStyles}>
             Title
           </InputLabel>
@@ -69,7 +98,10 @@ const AddBlogs = () => {
             value={inputs.title}
             margin="auto"
             variant="outlined"
+            required
           />
+
+          {/* Blog Description */}
           <InputLabel className={classes.font} sx={labelStyles}>
             Description
           </InputLabel>
@@ -78,10 +110,22 @@ const AddBlogs = () => {
             name="description"
             onChange={handleChange}
             minRows={5}
-            margin="auto"
-            variant="outlined"
             value={inputs.description}
+            placeholder="Write your blog description..."
+            style={{
+              fontFamily: "inherit",
+              padding: "10px",
+              borderRadius: "4px",
+              borderColor: "#ccc",
+              borderWidth: "1px",
+              outline: "none",
+              resize: "none",
+              width: "100%",
+              marginTop: "10px",
+            }}
           />
+
+          {/* Blog Image URL */}
           <InputLabel className={classes.font} sx={labelStyles}>
             ImageURL
           </InputLabel>
@@ -92,13 +136,17 @@ const AddBlogs = () => {
             value={inputs.imageURL}
             margin="auto"
             variant="outlined"
+            required
           />
+
+          {/* Submit Button */}
           <Button
             sx={{ mt: 2, borderRadius: 4 }}
             variant="contained"
             type="submit"
+            disabled={isSubmitting} // Disable button while submitting
           >
-            Submit
+            {isSubmitting ? "Submitting..." : "Submit"}
           </Button>
         </Box>
       </form>

@@ -45,12 +45,12 @@ const Blogs = ({ title, desc, img, user, date, isUser, id }) => {
   };
 
   return (
+    <Grid item xs={3} sm={1} md={2} lg={3}>
       <Card
         sx={{
-          width: "30%",
+          width: "100%",
           height: "100%",
           boxShadow: "2px 2px 10px rgba(0, 0, 0, 0.1)",
-          marginBottom: "10px",
           transition: "transform 0.3s ease",
           "&:hover": {
             transform: "scale(1.03)",
@@ -132,6 +132,7 @@ const Blogs = ({ title, desc, img, user, date, isUser, id }) => {
           </Typography>
         </CardContent>
       </Card>
+    </Grid>
   );
 };
 

@@ -29,11 +29,13 @@ const AddBlogs = () => {
   // Send POST request to add a new blog
   const sendRequest = async () => {
     try {
+      const currentUser = JSON.parse(sessionStorage.getItem("currentUser"));
+      const id = currentUser.user._id;
       const res = await axios.post(`${config.BASE_URL}/api/blogs/add`, {
         title: inputs.title,
         desc: inputs.description,
         img: inputs.imageURL,
-        user: localStorage.getItem("userId"),
+        user: id,
       });
       return res.data;
     } catch (err) {
@@ -44,7 +46,7 @@ const AddBlogs = () => {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Basic validation: Check if inputs are not empty
     if (!inputs.title || !inputs.description || !inputs.imageURL) {
       alert("Please fill all the fields before submitting.");

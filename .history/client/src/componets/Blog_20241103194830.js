@@ -47,10 +47,9 @@ const Blogs = ({ title, desc, img, user, date, isUser, id }) => {
   return (
       <Card
         sx={{
-          width: "30%",
+          width: "100%",
           height: "100%",
           boxShadow: "2px 2px 10px rgba(0, 0, 0, 0.1)",
-          marginBottom: "10px",
           transition: "transform 0.3s ease",
           "&:hover": {
             transform: "scale(1.03)",

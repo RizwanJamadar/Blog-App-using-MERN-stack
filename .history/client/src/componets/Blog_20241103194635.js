@@ -8,12 +8,15 @@ import {
   IconButton,
   Typography,
   Grid,
+  Tooltip,
 } from "@mui/material";
 import React from "react";
 import ModeEditOutlineIcon from "@mui/icons-material/ModeEditOutline";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import ShareIcon from "@mui/icons-material/Share";
 import { useStyles } from "./utils";
 import config from "../config";
 
@@ -26,9 +29,7 @@ const Blogs = ({ title, desc, img, user, date, isUser, id }) => {
   };
 
   const deleteRequest = async () => {
-    const res = await axios
-      .delete(`${config.BASE_URL}/api/blogs/${id}`)
-      .catch((err) => console.log(err));
+    const res = await axios.delete(`${config.BASE_URL}/api/blogs/${id}`).catch((err) => console.log(err));
     const data = await res.data;
     return data;
   };
@@ -40,20 +41,19 @@ const Blogs = ({ title, desc, img, user, date, isUser, id }) => {
   };
 
   const handleReadMore = () => {
-    // Redirect to the blog detail page
     navigate(`/blogs/${id}`);
   };
 
   return (
+    <Grid item xs={12} sm={6} md={4} lg={3}>
       <Card
         sx={{
-          width: "30%",
+          width: "100%",
           height: "100%",
-          boxShadow: "2px 2px 10px rgba(0, 0, 0, 0.1)",
-          marginBottom: "10px",
+          boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
           transition: "transform 0.3s ease",
           "&:hover": {
-            transform: "scale(1.03)",
+            transform: "scale(1.05)",
           },
         }}
       >
@@ -69,11 +69,7 @@ const Blogs = ({ title, desc, img, user, date, isUser, id }) => {
         )}
         <CardHeader
           avatar={
-            <Avatar
-              className={classes.font}
-              sx={{ bgcolor: "primary.main" }}
-              aria-label="recipe"
-            >
+            <Avatar className={classes.font} sx={{ bgcolor: "primary.main" }}>
               {user ? user.charAt(0) : ""}
             </Avatar>
           }
@@ -82,21 +78,15 @@ const Blogs = ({ title, desc, img, user, date, isUser, id }) => {
         <CardMedia
           component="img"
           sx={{
-            height: "150px", // Fixed height
-            width: "100%", // Fixed width
-            objectFit: "cover", // Maintain aspect ratio
-            borderRadius: "4px", // Optional: Rounded corners
+            height: 200,
+            width: "100%",
+            objectFit: "cover",
+            borderRadius: "4px",
           }}
-          image={img}
+          image={img || "https://via.placeholder.com/200"}
           alt={title}
         />
-        <CardContent
-          sx={{
-            padding: "16px",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-          }}
-        >
+        <CardContent sx={{ padding: "16px" }}>
           <Box display="flex" justifyContent="space-between">
             <Typography variant="body2" color="text.secondary">
               <b>{user}</b>
@@ -130,8 +120,22 @@ const Blogs = ({ title, desc, img, user, date, isUser, id }) => {
           >
             Read More
           </Typography>
+
+          <Box display="flex" justifyContent="space-between" padding="0 16px 16px">
+            <Tooltip title="Like">
+              <IconButton>
+                <FavoriteIcon color="secondary" />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Share">
+              <IconButton>
+                <ShareIcon />
+              </IconButton>
+            </Tooltip>
+          </Box>
         </CardContent>
       </Card>
+    </Grid>
   );
 };
 
